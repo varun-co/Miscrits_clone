@@ -55,7 +55,7 @@ This document specifies the abstractions required to implement v1 of the Miscrit
 ### 1.5 Project structure
 
 ```
-src/miscrits/
+src/miscrits_clone/
 ├── models/              # Domain entities and value types
 │   ├── enums.py         # All enumerations + triangle constants
 │   ├── value_types.py   # DamageResult, Slot, Action, TurnEntry, observations

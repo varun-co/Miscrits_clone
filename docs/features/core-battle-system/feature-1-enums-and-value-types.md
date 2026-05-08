@@ -105,7 +105,7 @@ miscrits_clone/
 - Type hints everywhere — aim for `mypy --strict` compliance
 - No runtime dependencies beyond stdlib for v1 (keep it lean for RL training speed)
 
-## 3. Enumerations (src/miscrits/models/enums.py)
+## 3. Enumerations (src/miscrits_clone/models/enums.py)
 
 All enums use `StrEnum` for JSON-serializable string values.
 
@@ -135,7 +135,7 @@ def get_triangle(nature: Nature) -> set[Nature]:
 
 This is a constant + utility, not an enum member — but it belongs in `enums.py` because it's the canonical definition of triangle membership used by validation (Feature 3) and NatureResolver (Feature 2).
 
-## 4. Value types (src/miscrits/models/value_types.py)
+## 4. Value types (src/miscrits_clone/models/value_types.py)
 
 All value types are frozen dataclasses unless they need mutability.
 
@@ -266,7 +266,7 @@ class BattleResult:
 
 After this feature is complete:
 - The project structure exists and every contributor knows where files go
-- All shared types are importable from `miscrits.models.enums` and `miscrits.models.value_types`
+- All shared types are importable from `miscrits_clone.models.enums` and `miscrits_clone.models.value_types`
 - `pytest` runs and passes
 - `mypy` passes on all new files
 - Every downstream feature (2-12) can import these types without circular dependencies

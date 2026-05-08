@@ -1,0 +1,30 @@
+[project]
+name = "miscrits-clone"
+version = "0.1.0"
+description = "Miscrits battle simulation and RL training platform"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.mypy]
+strict = true
+packages = ["miscrits_clone"]
+mypy_path = "src"
+
+[tool.coverage.run]
+source = ["miscrits_clone"]
