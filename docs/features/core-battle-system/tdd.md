@@ -9,7 +9,7 @@ References: docs/features/core-battle-system/prd.md
 
 ## 1. Purpose and scope
 
-This document specifies the abstractions required to implement v1 of the Miscrits battle system. It defines components, contracts, and extension points. It is language-agnostic — developers should be able to read this and implement in the language of their choice.
+This document specifies the abstractions required to implement v1 of the Miscrits battle system. It defines components, contracts, and extension points. The implementation language is **Python 3.11+**.
 
 **References PRD:** docs/features/core-battle-system/prd.md
 
@@ -41,6 +41,69 @@ This document specifies the abstractions required to implement v1 of the Miscrit
 - **Strategy pattern** — for any algorithm the design expects to evolve (damage calc, turn order, accuracy).
 - **Adapter pattern** — at I/O boundaries (storage).
 - **Template/Instance separation** — per-species data is shared; per-creature state is isolated.
+
+### 1.4 Language and tooling
+
+- **Python 3.11+** — for `StrEnum`, improved type hints, `dataclass` features
+- **dataclasses** — frozen for value types, mutable for runtime entities
+- **enum.StrEnum** — string-serializable enums for JSON compatibility
+- **abc.ABC + abstractmethod** — for interfaces (Effect, ActionProvider, StorageAdapter, strategies)
+- **pytest + pytest-cov** — testing and coverage
+- **mypy --strict** — type checking
+- **No runtime dependencies beyond stdlib** for v1 (lean for RL training speed)
+
+### 1.5 Project structure
+
+```
+src/miscrits/
+├── models/              # Domain entities and value types
+│   ├── enums.py         # All enumerations + triangle constants
+│   ├── value_types.py   # DamageResult, Slot, Action, TurnEntry, observations
+│   ├── miscrit.py       # Miscrit template, MiscritInstance
+│   ├── attack.py        # Attack data model
+│   ├── effect.py        # Effect ABC
+│   ├── player.py        # Player entity
+│   └── battle.py        # Battle, BattleSide
+├── registries/          # Global catalogs
+│   ├── miscrit_registry.py
+│   ├── attack_registry.py
+│   └── effect_registry.py
+├── engine/              # Combat subsystem
+│   ├── battle_engine.py
+│   ├── nature_resolver.py
+│   ├── damage_calculator.py
+│   ├── turn_order.py
+│   ├── accuracy_checker.py
+│   └── rng.py
+├── effects/             # v1 effect implementations
+│   ├── stat_buff.py, stat_debuff.py
+│   ├── burn.py, regenerate.py
+│   ├── poison.py, switch_curse.py
+│   ├── negate.py, instant_heal.py
+├── providers/           # ActionProvider implementations
+│   ├── action_provider.py   # ABC
+│   ├── random_provider.py
+│   └── scripted_provider.py
+├── services/            # Player, slots
+│   ├── player_service.py
+│   └── slot_manager.py
+├── storage/             # Persistence layer
+│   ├── storage_adapter.py   # ABC
+│   ├── file_adapter.py
+│   └── game_state_store.py
+└── loader/
+    └── data_loader.py
+
+tests/
+├── unit/                # One test file per component
+└── integration/         # Cross-component tests (battle e2e, storage, loader)
+
+data/
+├── miscrits/            # Species JSON configs
+└── attacks/             # Attack JSON configs
+```
+
+Each module maps to one component from the dependency map in §6.
 
 ---
 
