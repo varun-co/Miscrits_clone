@@ -11,6 +11,35 @@ class Nature(StrEnum):
     LIGHTNING = "LIGHTNING"
     WIND = "WIND"
 
+    @property
+    def beats(self):
+        # Define the relationships here
+        relationships = {
+            Nature.WATER: Nature.FIRE,
+            Nature.FIRE: Nature.NATURE,
+            Nature.NATURE: Nature.WATER,
+            Nature.EARTH: Nature.LIGHTNING,
+            Nature.LIGHTNING: Nature.WIND,
+            Nature.WIND: Nature.EARTH,
+        }
+        return relationships.get(self)
+
+    @property
+    def is_triangle_1(self):
+        if self in TRIANGLE_1:
+            return True
+        return False
+
+    def __gt__(self, other):
+        if not isinstance(other, Nature):
+            return NotImplemented
+        return self.beats == other
+
+    def __lt__(self, other):
+        if not isinstance(other, Nature):
+            return NotImplemented
+        return other.beats == self
+
 
 class Stat(StrEnum):
     HP = "HP"

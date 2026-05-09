@@ -339,15 +339,19 @@ clear(player_id, slot_index)
 
 **NatureResolver**
 
-Encapsulates the nature matchup table and multiplier logic.
+Encapsulates the nature matchup table and multiplier logic. Pure matchup math — does not know about effects.
 
 ```
 get_multiplier(attack_nature: Nature?, defender_natures: List<Nature>) -> float
-is_strong(attacker_nature: Nature, defender_nature: Nature) -> bool
-is_weak(attacker_nature: Nature, defender_nature: Nature) -> bool
+is_strong(attack_nature: Nature?, defender_natures: List<Nature>) -> bool
+is_weak(attack_nature: Nature?, defender_natures: List<Nature>) -> bool
 ```
 
-This is a stateless utility. It could be a static/module-level function or a small service — implementation's choice. The key contract is that nature matchup logic lives in exactly one place.
+This is a stateless utility. The key contract is that nature matchup logic lives in exactly one place.
+
+**Negate interaction:** The NatureResolver does not handle Negate. When a defender has the Negate effect active, the **DamageCalculator** is responsible for clamping the multiplier: `max(1.0, resolver.get_multiplier(...))`. This keeps the resolver free of effect knowledge — it only knows matchup math.
+
+**Dual-nature convention:** When a miscrit has two natures, the first element is always from Triangle 1 and the second from Triangle 2. This invariant is enforced at Miscrit template construction (Feature 3), not at resolver runtime.
 
 **GameStateStore (with StorageAdapter)**
 
@@ -456,8 +460,9 @@ Reads:
 - `D` — defender's matching defense (`PD` or `ED`)
 - `AP` — `attack.power`
 - `M` — nature multiplier from `NatureResolver.get_multiplier(attack.nature, defender.natures)`
+- If defender has Negate active: `M = max(1.0, M)` — the DamageCalculator owns this clamping, not the NatureResolver
 
-`BattleContext` provides: round number, turn log, any battle-wide modifiers (e.g., Negate status on defender — removes elemental weakness, so multiplier is clamped to >= 1.0).
+`BattleContext` provides: round number, turn log, battle-wide modifiers (e.g., which miscrits have Negate active).
 
 **DamageResult:**
 
@@ -601,7 +606,7 @@ class BattleEngine:
 | Regenerate (HOT) | on_turn_end | Heal target by an amount derived from target's max HP. |
 | Poison (fixed DOT) | on_turn_end | Subtract fixed damage from target HP. Ignores stats. |
 | SwitchCurse | on_turn_end | Subtract `base_damage * turns_active` from target HP. Increments internal counter each turn. |
-| Negate | on_apply | Sets a flag on the target that causes NatureResolver to clamp multiplier >= 1.0 for incoming attacks. Duration = until battle end (or switch in v2). |
+| Negate | on_apply | Sets a flag on the target. The DamageCalculator reads this flag and clamps the nature multiplier to `max(1.0, M)` for incoming attacks. The NatureResolver is unaware of Negate. Duration = until battle end (or switch in v2). |
 | InstantHeal | on_apply | Add HP to target (capped at max HP). Duration = 0 (instant). |
 
 ### 4.4 Swapping a strategy
