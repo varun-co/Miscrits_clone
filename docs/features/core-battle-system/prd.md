@@ -93,6 +93,7 @@ Each attack has:
 |---|---|---|
 | id | string | Unique identifier |
 | name | string | Display name |
+| description | string | Flavor text |
 | type | PHYSICAL or ELEMENTAL | Determines which attack/defense stats are used |
 | nature | Nature (nullable) | For elemental attacks: the nature of the attack. Null for physical. |
 | power | int | Base damage (AP term in formula) |

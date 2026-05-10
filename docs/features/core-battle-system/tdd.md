@@ -337,7 +337,7 @@ clear(player_id, slot_index)
 
 `Slot`: index + optional MiscritInstance reference.
 
-**NatureResolver**
+**NatureResolver** *(located in `engine/`, not `services/` — it is a stateless utility, not a service)*
 
 Encapsulates the nature matchup table and multiplier logic. Pure matchup math — does not know about effects.
 

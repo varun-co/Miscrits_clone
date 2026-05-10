@@ -17,7 +17,7 @@ Every component in the system depends on shared types (Nature, Stat, Grade, Atta
 miscrits_clone/
 ├── docs/                          # Specs, PRDs, TDDs (already exists)
 ├── src/
-│   └── miscrits/
+│   └── miscrits_clone/
 │       ├── __init__.py
 │       ├── models/                # Domain entities and value types
 │       │   ├── __init__.py
