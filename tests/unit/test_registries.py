@@ -8,7 +8,6 @@ from miscrits_clone.models.enums import (
     Nature,
     Rarity,
     Stat,
-    TargetRule,
 )
 from miscrits_clone.models.miscrit import Miscrit
 from miscrits_clone.registries.attack_registry import AttackRegistry
@@ -132,6 +131,10 @@ class TestMiscritRegistry:
     def test_list_all_empty(self, miscrit_reg: MiscritRegistry) -> None:
         assert miscrit_reg.list_all() == []
 
+    def test_list_by_nature_no_match(self, miscrit_reg: MiscritRegistry) -> None:
+        miscrit_reg.register(_make_miscrit(id="f1", name="F1", natures=[Nature.FIRE]))
+        assert miscrit_reg.list_by_nature(Nature.WATER) == []
+
 
 # ── AttackRegistry ───────────────────────────────────────────────
 
@@ -195,6 +198,12 @@ class TestAttackRegistry:
             attack_reg.unregister("fireball")
         assert "m1" in str(exc_info.value)
         assert "m2" in str(exc_info.value)
+
+    def test_unregister_then_reregister(self, attack_reg: AttackRegistry) -> None:
+        attack_reg.register(_make_elemental())
+        attack_reg.unregister("fireball")
+        attack_reg.register(_make_elemental())
+        assert attack_reg.get("fireball").name == "Fireball"
 
     def test_unregister_unknown_raises(self, attack_reg: AttackRegistry) -> None:
         with pytest.raises(KeyError, match="not found"):
