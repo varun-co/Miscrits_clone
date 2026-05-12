@@ -14,3 +14,10 @@
 - [ ] **T3.3: Implement Attack frozen dataclass** — `@dataclass(frozen=True, kw_only=True)` in `src/miscrits_clone/models/attack.py` with fields: `id`, `name`, `description`, `type`, `nature`, `power`, `accuracy`, `effect_ids`, `target_rule`. Add `__post_init__` validation: elemental must have nature, physical must not, power > 0, accuracy 0-100, non-empty id/name.
 - [ ] **T3.4: Write Miscrit tests** — `tests/unit/test_miscrit.py`: valid single/dual nature, auto-sort, all rejection cases (empty natures, 3 natures, same triangle, missing stats, stats out of range, empty id/name), full movelist CRUD coverage (add, duplicate reject, remove, remove missing, replace, replace order preservation, has_attack).
 - [ ] **T3.5: Write Attack tests** — `tests/unit/test_attack.py`: valid physical/elemental, all rejection cases (elemental+null nature, physical+nature, accuracy bounds, power bounds, empty id/name), frozen immutability check, default values for effect_ids and target_rule.
+
+## Feature 4: Registries (Miscrit, Attack, Effect)
+
+- [ ] **T4.1: Implement MiscritRegistry** — `dict[str, Miscrit]` backed. Methods: `register`, `get`, `unregister`, `list_all`, `list_by_nature`, `list_by_rarity`. Duplicate ID rejected on register. `KeyError` on get/unregister unknown ID.
+- [ ] **T4.2: Implement AttackRegistry** — `dict[str, Attack]` backed. Takes `MiscritRegistry` in constructor. Methods: `register`, `get`, `unregister` (with referential integrity check against miscrit movelists), `list_all`, `list_by_type`, `list_by_nature`.
+- [ ] **T4.3: Implement EffectRegistry** — `dict[str, Callable[[], Effect]]` backed (factories, not singletons). Takes `AttackRegistry` in constructor. Methods: `register`, `create` (calls factory, returns fresh instance), `unregister` (with referential integrity check against attack effect_ids), `list_ids`.
+- [ ] **T4.4: Write registry tests** — `tests/unit/test_registries.py`: register/get round-trip, list filters (nature, rarity, type), duplicate ID rejection, unknown ID errors, unregister success, unregister blocked by references (with error message listing referencing entities), EffectRegistry create-twice independence.
